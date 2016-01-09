@@ -6,6 +6,7 @@ import (
 	"github.com/AtomasBots/atomas_server_hook/atomas"
 	"os/exec"
 	"time"
+	"io/ioutil"
 )
 
 var version string
@@ -34,6 +35,7 @@ func rebootWhenNoInternet() {
 		} else {
 			time.Sleep(time.Second * 10)
 			if (!isWifiOk()) {
+				ioutil.WriteFile(time.Now().String(), []byte(time.Now().String()), 0644)
 				exec.Command("sudo", "reboot").Start()
 			}
 		}
