@@ -2,16 +2,15 @@ package atomas
 import (
 	"net/http"
 	"fmt"
-	"os/exec"
 	"net"
 )
 
-func CreateHookHandler(hooks *Hooks) func(http.ResponseWriter, *http.Request) {
+func CreateHookHandler(hooks *Hooks, doOnHook func()) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		remoteIP := r.RemoteAddr
 		if (isOnWhiteList(remoteIP)) {
 			hooks.Hooks = append(hooks.Hooks, remoteIP)
-			exec.Command("bash", "onhook").Start()
+			doOnHook()
 			fmt.Fprint(w, ToJsonString(hooks))
 		}else {
 			http.Error(w, "Frobidden", http.StatusForbidden)
