@@ -5,6 +5,7 @@ import (
 	"os"
 	"github.com/AtomasBots/atomas_server_hook/atomas"
 	"os/exec"
+	"time"
 )
 
 var version string
@@ -20,6 +21,28 @@ func main() {
 	http.HandleFunc("/health", atomas.CreateHealthService())
 	http.HandleFunc("/version", atomas.CreateVersionHandler(version))
 	port := os.Args[1]
-	doOnHook()
+	go doOnHook()
+	go rebootWhenNoInternet()
 	log.Fatal(http.ListenAndServe(port, nil))
+}
+
+func rebootWhenNoInternet() {
+	time.Sleep(300)
+	for {
+		if (isWifiOk()) {
+			time.Sleep(time.Second)
+		} else {
+			time.Sleep(time.Second * 10)
+			if (!isWifiOk()) {
+				exec.Command("sudo", "reboot").Start()
+			}
+		}
+	}
+}
+
+func isWifiOk() bool {
+	command := exec.Command("ping", "-c", "1", "192.168.0.1")
+	command.Start()
+	err := command.Wait()
+	return err == nil
 }
