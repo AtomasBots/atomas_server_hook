@@ -5,8 +5,6 @@ import (
 	"os"
 	"github.com/AtomasBots/atomas_server_hook/atomas"
 	"os/exec"
-	"time"
-	"io/ioutil"
 )
 
 var version string
